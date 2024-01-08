@@ -1,22 +1,15 @@
-import datetime
 import threading
 import tkinter as tk
-
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from scipy.signal import savgol_filter
-
-from Create_Button import button_return, button_export_NIR, button_export_VIS, button_select_VIS, button_select_NIR, \
-    button_get_data
+from Create_Button import button_return, button_export_NIR, button_export_VIS, button_get_data
 from Create_Clock import clock
-from PIL import ImageTk, Image
-
 from Create_Entry import entry_box_calib, entry_box_data, entry_box_mean_spectrum, entry_box_spectrum_plot, \
     entry_box_spectrum_mini_plot
-from Create_Label import label_title_spectrum, label_title_training, label_title_export_calib, label_title_export_data, \
-    label_title_export_mean_spectrum, label_title_about
+from Create_Label import (label_title_spectrum, label_title_training, label_title_export_calib,
+                          label_title_export_data,label_title_export_mean_spectrum, label_title_about)
 from Create_Menu import menu_box_spectrum_plot
 from Export_calib_nir import Export_calib_nir
 from Export_calib_vis import Export_calib_vis
@@ -184,7 +177,6 @@ def Spectrum():
         Object = values_object.get()
         list_Object = values_list_object.get()
         list_Object = list_Object.split(", ")
-        print(list_Object)
         Target = values_target.get()
 
         img1, img2, img3 = spectrum_plot(Path_File_Data, start_col=start, num_plots=num, object=Object,
@@ -377,11 +369,8 @@ def Export_calib():
         def click_data():
             global label_show_vis
             value_path_folder = values_path_folder.get()
-            print("Đã nhận:", value_path_folder)
             value_name = values_name_file.get()
-            print("Đã nhận:", value_name)
             value_path_save = values_path_save_file.get()
-            print("Đã nhận:", value_path_save)
 
             Export_calib_vis(path_folder=value_path_folder, name_file=f'{value_name}', path_save=value_path_save)
             try:
@@ -416,11 +405,8 @@ def Export_calib():
         def click_data():
             global label_show_nir
             value_path_folder = values_path_folder.get()
-            print("Đã nhận:", value_path_folder)
             value_name = values_name_file.get()
-            print("Đã nhận:", value_name)
             value_path_save = values_path_save_file.get()
-            print("Đã nhận:", value_path_save)
 
             Export_calib_nir(path_folder=value_path_folder, name_file=f'{value_name}', path_save=value_path_save)
             try:
