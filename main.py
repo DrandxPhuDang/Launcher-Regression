@@ -1,6 +1,5 @@
 import threading
 import tkinter as tk
-
 from Create_Frame import frame_top_training, frame_bot_training
 
 

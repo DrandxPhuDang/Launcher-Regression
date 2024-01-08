@@ -2,14 +2,19 @@ import datetime
 import threading
 import tkinter as tk
 
+import numpy as np
 import pandas as pd
+from matplotlib import pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from scipy.signal import savgol_filter
 
 from Create_Button import button_return, button_export_NIR, button_export_VIS, button_select_VIS, button_select_NIR, \
     button_get_data
 from Create_Clock import clock
 from PIL import ImageTk, Image
 
-from Create_Entry import entry_box_calib, entry_box_data, entry_box_mean_spectrum, entry_box_spectrum_plot
+from Create_Entry import entry_box_calib, entry_box_data, entry_box_mean_spectrum, entry_box_spectrum_plot, \
+    entry_box_spectrum_mini_plot
 from Create_Label import label_title_spectrum, label_title_training, label_title_export_calib, label_title_export_data, \
     label_title_export_mean_spectrum, label_title_about
 from Create_Menu import menu_box_spectrum_plot
@@ -67,13 +72,81 @@ def Spectrum():
     def wins_spectrum():
         windows.destroy()
         windows_mini = tk.Toplevel()
-        windows_mini.geometry("750x620")
+        windows_mini.geometry("750x420")
         windows_mini.resizable(width=False, height=False)
         windows_mini.title('Spectrum mode compare')
 
         windows_mini.grid_rowconfigure(0, weight=1)
         windows_mini.grid_rowconfigure(1, weight=50)
         windows_mini.grid_columnconfigure(0, weight=1)
+
+        frame_top_mini = tk.Frame(windows_mini, bg='White', width=50, height=5)
+        frame_top_mini.grid(row=0, column=0, sticky="nsew")
+        frame_bot_mini = tk.Frame(windows_mini, bg='Gray', width=800, height=5)
+        frame_bot_mini.grid(row=1, column=0, sticky="nsew")
+
+        # Tạo tựa windows
+        lb_title_mini_threading = threading.Thread(target=label_title_spectrum(frame_top_mini))
+        lb_title_mini_threading.start()
+
+        # Tạo đồng hồ
+        clock_mini_threading = threading.Thread(target=clock(frame_top_mini))
+        clock_mini_threading.start()
+
+        def end_win_spectrum_mini_plot():
+            windows_mini.destroy()
+            Spectrum()
+
+        # Tạo nút
+        btn_return_mini_threading = threading.Thread(target=button_return(frame_top_mini,
+                                                                          click=end_win_spectrum_mini_plot))
+        btn_return_mini_threading.start()
+
+        values_path_file_mini, values_start_col_mini = entry_box_spectrum_mini_plot(frame_bot_mini)
+
+        def plot_mini(ax_plot, data, features, title, X_label, y_label, color):
+            data = savgol_filter(data, 11, polyorder=2, deriv=0)
+            row, _ = data.shape  # so hang cua bo du lieu
+            fmx = []
+            for x in features:
+                fmx.append(float(x))
+            for i in range(0, row):
+                ax_plot.plot(fmx, data[i], color=color)
+            ax_plot.set_xticks(np.arange(int(min(fmx)), int(max(fmx)), 100))
+            ax_plot.set_title(title)
+            ax_plot.set_ylabel(y_label)
+            ax_plot.set_xlabel(X_label)
+            ax_plot.grid()
+
+        def click_spectrum_mini():
+            global label_show_spectrum_mini
+            Path_File_Data = values_path_file_mini.get()
+            start = values_start_col_mini.get()
+            start = int(start)
+
+            df = pd.read_csv(fr'{Path_File_Data}')
+            list_features = df.iloc[:0, start:]
+            features = [f'{e}' for e in list_features]
+            df_all = df[features]
+
+            # Tạo figure và các subplot
+            fig_mini, axs_mini = plt.subplots(dpi=150)
+
+            plot_mini(axs_mini, df_all, features=features, title='Spectrum', X_label=r'$\lambda$ (nm)',
+                      y_label='Spectra intensity', color=None)
+
+            plt.show()
+
+            try:
+                if label_show_spectrum_mini:
+                    label_show_spectrum_mini.destroy()
+            except:
+                pass
+
+        btn_export_mini = threading.Thread(target=button_get_data(frame_bot_mini, click_spectrum_mini))
+        btn_export_mini.start()
+
+        windows_mini.update()
 
     menu_box_spectrum_plot(windows, spectrum_mini=wins_spectrum)
 
@@ -107,13 +180,15 @@ def Spectrum():
         start = values_start_col.get()
         start = int(start)
         num = values_Plot.get()
-        num = int(int(num)/2)
+        num = int(int(num) / 2)
         Object = values_object.get()
         list_Object = values_list_object.get()
         list_Object = list_Object.split(", ")
+        print(list_Object)
         Target = values_target.get()
-        spectrum_plot(Path_File_Data, start_col=start, num_plots=num, object=Object,
-                      list_object=list_Object, target=Target, path_save=value_path_save)
+
+        img1, img2, img3 = spectrum_plot(Path_File_Data, start_col=start, num_plots=num, object=Object,
+                                         list_object=list_Object, target=Target, path_save=value_path_save)
 
         try:
             if label_show_spectrum:

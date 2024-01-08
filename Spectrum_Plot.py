@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from scipy.signal import savgol_filter
+from PIL import Image, ImageTk
 
 
 def spectrum_plot(Path_file_data, start_col, num_plots, object, list_object, target, path_save):
@@ -12,7 +13,11 @@ def spectrum_plot(Path_file_data, start_col, num_plots, object, list_object, tar
     get_features = [f'{e}' for e in list_features]
     list_spectrum = []
     for i_object in list_object:
-        get_object = df[df[object] == f'{i_object}']
+        try:
+            i_object = int(i_object)
+        except:
+            pass
+        get_object = df[df[object] == i_object]
         list_spectrum.append(get_object)
 
     list_target = []
@@ -51,10 +56,9 @@ def spectrum_plot(Path_file_data, start_col, num_plots, object, list_object, tar
         ax_plot.set_xlabel(r'$\lambda$ (nm)', fontsize=15, fontweight='bold')
         ax_plot.set_ylabel('Spectra intensity', fontsize=15, fontweight='bold')
 
-    fig, axes_spectrum = plt.subplots(nrows=num_plots, ncols=2)
+    fig, axes_spectrum = plt.subplots(nrows=num_plots, ncols=2, dpi=150)
 
     fig.suptitle('Spectrum ', fontsize=19, fontweight='bold')
-    plt.subplots_adjust(left=0.076, right=0.96)
     try:
         for i, ax_spectrum in enumerate(axes_spectrum.flatten()):
             plot(ax_spectrum, list_spectrum[i], features=get_features, title=f'{list_object[i]}', color=None)
@@ -63,9 +67,11 @@ def spectrum_plot(Path_file_data, start_col, num_plots, object, list_object, tar
     fig.supxlabel(r'$\lambda$ (nm)', fontsize=15, fontweight='bold')
     fig.supylabel('Spectra intensity', fontsize=15, fontweight='bold')
     plt.savefig(path_save + r'\Spectrum' + '.png')
+    image1 = Image.open(path_save + r'\Spectrum' + '.png')
+    image1 = ImageTk.PhotoImage(image1)
 
     # -----------------------------------------------------------------------
-    plt.figure()
+    plt.figure(dpi=150)
     plt.title('Mean Spectrum ', fontsize=19, fontweight='bold')
     try:
         for i, ax_spectrum in enumerate(axes_spectrum.flatten()):
@@ -75,9 +81,11 @@ def spectrum_plot(Path_file_data, start_col, num_plots, object, list_object, tar
     plt.legend()
     plt.grid(1)
     plt.savefig(path_save + r'\Mean Spectrum' + '.png')
+    image2 = Image.open(path_save + r'\Mean Spectrum' + '.png')
+    image2 = ImageTk.PhotoImage(image2)
 
     # -----------------------------------------------------------------------
-    fig_target, axes_spectrum_target = plt.subplots(nrows=num_plots, ncols=2)
+    fig_target, axes_spectrum_target = plt.subplots(nrows=num_plots, ncols=2, dpi=150)
     try:
         for i_target, ax_spectrum_target in enumerate(axes_spectrum_target.flatten()):
             plot_target(ax_spectrum_target, list_target[i_target], title=f'{target} ' + f'({list_object[i_target]})',
@@ -87,6 +95,9 @@ def spectrum_plot(Path_file_data, start_col, num_plots, object, list_object, tar
     fig_target.supxlabel('Sample number', fontsize=15, fontweight='bold')
     fig_target.supylabel(f'{target} Range', fontsize=15, fontweight='bold')
     plt.savefig(path_save + r'\Target' + '.png')
+    image3 = Image.open(path_save + r'\Target' + '.png')
+    image3 = ImageTk.PhotoImage(image3)
 
     plt.show()
-    plt.close('all')
+
+    return image1, image2, image3

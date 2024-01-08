@@ -3,7 +3,8 @@ import tkinter as tk
 
 def entry_box_calib(windows):
     # Tạo text box đầu vào
-    path_folder_sensor = tk.Label(windows, text="Path Folder Sensor", font=("TVN-Qatar2022-Bold", 15), bg='gray', fg='White')
+    path_folder_sensor = tk.Label(windows, text="Path Folder Sensor", font=("TVN-Qatar2022-Bold", 15), bg='gray',
+                                  fg='White')
     path_folder_sensor.pack()
     values_path_folder_sensor = tk.Entry(windows, font=("TVN-Qatar2022-Bold", 20), width=40)
     values_path_folder_sensor.pack()
@@ -131,3 +132,20 @@ def entry_box_spectrum_plot(windows):
 
     return (values_path_folder_sensor, values_path_save_file, values_start_col,
             values_Plot, values_object, values_list_object, values_target)
+
+
+def entry_box_spectrum_mini_plot(windows):
+    # Tạo text box đầu vào
+    path_File = tk.Label(windows, text="Path File Data", font=("TVN-Qatar2022-Bold", 15), bg='gray',
+                         fg='White')
+    path_File.pack()
+    values_path_File = tk.Entry(windows, font=("TVN-Qatar2022-Bold", 20), width=40)
+    values_path_File.pack()
+
+    # Tạo text box đầu ra
+    Start = tk.Label(windows, text="Start Column", font=("TVN-Qatar2022-Bold", 15), bg='gray', fg='White')
+    Start.pack()
+    values_Start = tk.Entry(windows, font=("TVN-Qatar2022-Bold", 20), width=40)
+    values_Start.pack()
+
+    return values_path_File, values_Start
