@@ -20,8 +20,11 @@ def frame_top_training(windows):
     clock_threading = threading.Thread(target=clock(frame_top))
     clock_threading.start()
 
+    def end_main_wins():
+        windows.destroy()
+
     # Tạo nút đăng xuất
-    btn_sign_out_threading = threading.Thread(target=button_sign_out(frame_top))
+    btn_sign_out_threading = threading.Thread(target=button_sign_out(frame_top, click=end_main_wins))
     btn_sign_out_threading.start()
 
 

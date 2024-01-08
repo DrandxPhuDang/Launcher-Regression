@@ -7,7 +7,7 @@ from Create_Frame import frame_top_training, frame_bot_training
 def main_page():
     windows = tk.Tk()
 
-    windows.geometry("320x540")
+    windows.geometry("360x540")
     windows.title("Select mode")
     windows.resizable(width=False, height=False)
     icon = tk.PhotoImage(file=r"image\logo.png")

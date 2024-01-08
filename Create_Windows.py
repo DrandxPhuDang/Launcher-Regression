@@ -9,19 +9,21 @@ from Create_Button import button_return, button_export_NIR, button_export_VIS, b
 from Create_Clock import clock
 from PIL import ImageTk, Image
 
-from Create_Entry import entry_box_calib, entry_box_data, entry_box_mean_spectrum
+from Create_Entry import entry_box_calib, entry_box_data, entry_box_mean_spectrum, entry_box_spectrum_plot
 from Create_Label import label_title_spectrum, label_title_training, label_title_export_calib, label_title_export_data, \
     label_title_export_mean_spectrum, label_title_about
+from Create_Menu import menu_box_spectrum_plot
 from Export_calib_nir import Export_calib_nir
 from Export_calib_vis import Export_calib_vis
 from Export_data_nir import Export_Data_nir
 from Export_data_vis import Export_Data_vis
 from Mean_spectrum import mean_features
+from Spectrum_Plot import spectrum_plot
 
 
 def Training():
     windows = tk.Toplevel()
-    windows.geometry("1720x900")
+    windows.geometry("750x880")
     windows.resizable(width=False, height=False)
     windows.title('Training model')
 
@@ -54,13 +56,26 @@ def Training():
 
 def Spectrum():
     windows = tk.Toplevel()
-    windows.geometry("1720x900")
-    # windows.resizable(width=False, height=False)
+    windows.geometry("750x880")
+    windows.resizable(width=False, height=False)
     windows.title('Spectrum plot')
 
     windows.grid_rowconfigure(0, weight=1)
     windows.grid_rowconfigure(1, weight=50)
     windows.grid_columnconfigure(0, weight=1)
+
+    def wins_spectrum():
+        windows.destroy()
+        windows_mini = tk.Toplevel()
+        windows_mini.geometry("750x620")
+        windows_mini.resizable(width=False, height=False)
+        windows_mini.title('Spectrum mode compare')
+
+        windows_mini.grid_rowconfigure(0, weight=1)
+        windows_mini.grid_rowconfigure(1, weight=50)
+        windows_mini.grid_columnconfigure(0, weight=1)
+
+    menu_box_spectrum_plot(windows, spectrum_mini=wins_spectrum)
 
     frame_top = tk.Frame(windows, bg='White', width=50, height=5)
     frame_top.grid(row=0, column=0, sticky="nsew")
@@ -82,12 +97,43 @@ def Spectrum():
     btn_return_threading = threading.Thread(target=button_return(frame_top, click=end_win_spectrum_plot))
     btn_return_threading.start()
 
+    (values_path_file_data, values_path_save_file, values_start_col,
+     values_Plot, values_object, values_list_object, values_target) = entry_box_spectrum_plot(frame_bot)
+
+    def click_spectrum():
+        global label_show_spectrum
+        Path_File_Data = values_path_file_data.get()
+        value_path_save = values_path_save_file.get()
+        start = values_start_col.get()
+        start = int(start)
+        num = values_Plot.get()
+        num = int(int(num)/2)
+        Object = values_object.get()
+        list_Object = values_list_object.get()
+        list_Object = list_Object.split(", ")
+        Target = values_target.get()
+        spectrum_plot(Path_File_Data, start_col=start, num_plots=num, object=Object,
+                      list_object=list_Object, target=Target, path_save=value_path_save)
+
+        try:
+            if label_show_spectrum:
+                label_show_spectrum.destroy()  # Xóa label nếu đã tồn tại
+        except:
+            pass
+        label_show_spectrum = tk.Label(frame_bot, text=f'Đã Xuất File đến: {value_path_save}',
+                                       font=('TVN-Qatar2022-Bold', 15),
+                                       bg='Gray')
+        label_show_spectrum.pack()
+
+    btn_export = threading.Thread(target=button_get_data(frame_bot, click_spectrum))
+    btn_export.start()
+
     windows.update()
 
 
 def Export_data():
     windows = tk.Toplevel()
-    windows.geometry("1520x768")
+    windows.geometry("1520x820")
     windows.resizable(width=False, height=False)
     windows.title('Export data')
 
@@ -100,9 +146,9 @@ def Export_data():
     frame_bot = tk.Frame(windows, bg='Gray', width=800, height=5)
     frame_bot.grid(row=1, column=0, sticky="nsew")
     frame_bot_left = tk.Frame(frame_bot, bg='gray')
-    frame_bot_left.pack(side='left', pady=5, padx=10)
+    frame_bot_left.pack(side='left')
     frame_bot_right = tk.Frame(frame_bot, bg='gray')
-    frame_bot_right.pack(side='right', pady=5, padx=10)
+    frame_bot_right.pack(side='right')
 
     # Tạo tựa windows
     lb_title_threading = threading.Thread(target=label_title_export_data(frame_top))
@@ -207,7 +253,7 @@ def Export_data():
 
 def Export_calib():
     windows = tk.Toplevel()
-    windows.geometry("1520x568")
+    windows.geometry("1520x620")
     windows.resizable(width=False, height=False)
     windows.title('Export calib')
 
@@ -220,9 +266,9 @@ def Export_calib():
     frame_bot = tk.Frame(windows, bg='Gray', width=800, height=5)
     frame_bot.grid(row=1, column=0, sticky="nsew")
     frame_bot_left = tk.Frame(frame_bot, bg='gray')
-    frame_bot_left.pack(side='left', pady=5)
+    frame_bot_left.pack(side='left')
     frame_bot_right = tk.Frame(frame_bot, bg='gray')
-    frame_bot_right.pack(side='right', pady=5)
+    frame_bot_right.pack(side='right')
 
     # Tạo tựa windows
     lb_title_threading = threading.Thread(target=label_title_export_calib(frame_top))
@@ -352,7 +398,8 @@ def Export_mean_spectrum():
     btn_return_threading = threading.Thread(target=button_return(frame_top, click=end_win_spectrum_plot))
     btn_return_threading.start()
 
-    values_path_file_data, values_name_file, values_path_save_file, values_start_col = entry_box_mean_spectrum(frame_bot)
+    values_path_file_data, values_name_file, values_path_save_file, values_start_col = entry_box_mean_spectrum(
+        frame_bot)
 
     def click_export():
         global label_show_mean_spectrum
@@ -372,8 +419,8 @@ def Export_mean_spectrum():
         except:
             pass
         label_show_mean_spectrum = tk.Label(frame_bot, text=f'Đã Xuất File đến: {value_path_save}',
-                              font=('TVN-Qatar2022-Bold', 15),
-                              bg='Gray')
+                                            font=('TVN-Qatar2022-Bold', 15),
+                                            bg='Gray')
         label_show_mean_spectrum.pack()
 
     btn_export = threading.Thread(target=button_get_data(frame_bot, click_export))

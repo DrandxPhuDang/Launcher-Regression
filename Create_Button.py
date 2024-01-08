@@ -1,10 +1,10 @@
 import tkinter as tk
 
 
-def button_sign_out(frame):
+def button_sign_out(frame, click):
     btn_sign_out = tk.Button(frame, text="SIGN OUT",
                              font=('TVN-Qatar2022-Bold', 10), bg='white', activebackground='white',
-                             fg='white', foreground='black', border=0)
+                             fg='white', foreground='black', border=0, command=click)
     btn_sign_out.place(x=0, y=0)
 
 
