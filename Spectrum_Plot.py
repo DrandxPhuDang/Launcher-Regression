@@ -40,7 +40,7 @@ def spectrum_plot(Path_file_data, start_col, num_plots, object, list_object, tar
         ax_plot.grid()
 
     def plot_target(ax, data, title, color):
-        ax.plot(data, color)
+        ax.hist(data, bins=20, edgecolor=color)
         ax.set_title(title, fontweight='bold')
 
     def plot_mean(data, label, start):
@@ -56,7 +56,7 @@ def spectrum_plot(Path_file_data, start_col, num_plots, object, list_object, tar
         ax_plot.set_xlabel(r'$\lambda$ (nm)', fontsize=15, fontweight='bold')
         ax_plot.set_ylabel('Spectra intensity', fontsize=15, fontweight='bold')
 
-    fig, axes_spectrum = plt.subplots(nrows=num_plots, ncols=2, dpi=150)
+    fig, axes_spectrum = plt.subplots(nrows=num_plots, ncols=2, dpi=100)
 
     fig.suptitle('Spectrum ', fontsize=19, fontweight='bold')
     try:
@@ -71,7 +71,7 @@ def spectrum_plot(Path_file_data, start_col, num_plots, object, list_object, tar
     image1 = ImageTk.PhotoImage(image1)
 
     # -----------------------------------------------------------------------
-    plt.figure(dpi=150)
+    plt.figure(dpi=100)
     plt.title('Mean Spectrum ', fontsize=19, fontweight='bold')
     try:
         for i, ax_spectrum in enumerate(axes_spectrum.flatten()):
@@ -85,15 +85,15 @@ def spectrum_plot(Path_file_data, start_col, num_plots, object, list_object, tar
     image2 = ImageTk.PhotoImage(image2)
 
     # -----------------------------------------------------------------------
-    fig_target, axes_spectrum_target = plt.subplots(nrows=num_plots, ncols=2, dpi=150)
+    fig_target, axes_spectrum_target = plt.subplots(nrows=num_plots, ncols=2, dpi=100)
     try:
         for i_target, ax_spectrum_target in enumerate(axes_spectrum_target.flatten()):
             plot_target(ax_spectrum_target, list_target[i_target], title=f'{target} ' + f'({list_object[i_target]})',
                         color='Blue')
     except:
         pass
-    fig_target.supxlabel('Sample number', fontsize=15, fontweight='bold')
-    fig_target.supylabel(f'{target} Range', fontsize=15, fontweight='bold')
+    fig_target.supylabel('Sample number', fontsize=15, fontweight='bold')
+    fig_target.supxlabel(f'{target} Range', fontsize=15, fontweight='bold')
     plt.savefig(path_save + r'\Target' + '.png')
     image3 = Image.open(path_save + r'\Target' + '.png')
     image3 = ImageTk.PhotoImage(image3)

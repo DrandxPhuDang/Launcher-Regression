@@ -67,7 +67,7 @@ def Spectrum():
         windows_mini = tk.Toplevel()
         windows_mini.geometry("750x420")
         windows_mini.resizable(width=False, height=False)
-        windows_mini.title('Spectrum mode compare')
+        windows_mini.title('Spectrum mode')
 
         windows_mini.grid_rowconfigure(0, weight=1)
         windows_mini.grid_rowconfigure(1, weight=50)
@@ -110,6 +110,8 @@ def Spectrum():
             ax_plot.set_ylabel(y_label)
             ax_plot.set_xlabel(X_label)
             ax_plot.grid()
+            plt.grid(1)
+            plt.show()
 
         def click_spectrum_mini():
             global label_show_spectrum_mini
@@ -128,8 +130,6 @@ def Spectrum():
             plot_mini(axs_mini, df_all, features=features, title='Spectrum', X_label=r'$\lambda$ (nm)',
                       y_label='Spectra intensity', color=None)
 
-            plt.show()
-
             try:
                 if label_show_spectrum_mini:
                     label_show_spectrum_mini.destroy()
@@ -138,7 +138,6 @@ def Spectrum():
 
         btn_export_mini = threading.Thread(target=button_get_data(frame_bot_mini, click_spectrum_mini))
         btn_export_mini.start()
-
         windows_mini.update()
 
     menu_box_spectrum_plot(windows, spectrum_mini=wins_spectrum)
